@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Cat - Ritual Edition</title>
+    <title>Endless Cat - Evil Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <style>
         body {
@@ -61,16 +61,24 @@
         /* LAYER 2: Environment Overlays */
         #hell-overlay {
             position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh;
+            /* Fixed: Ensure gradient stretches correctly by anchoring to absolute bottom */
             background: radial-gradient(circle at 50% 100%, rgba(90, 0, 0, 0.4) 0%, rgba(26, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.9) 100%);
+            background-attachment: fixed;
             pointer-events: none;
             z-index: 2;
         }
 
         #fire-layer {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 30vh;
-            background: linear-gradient(to top, rgba(255, 69, 0, 0.7), transparent);
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 30vh;
+            background: linear-gradient(to top, rgba(255, 69, 0, 0.7) 0%, transparent 100%);
             pointer-events: none;
             z-index: 3;
             animation: flicker 3s infinite alternate;
@@ -90,22 +98,23 @@
         }
 
         @keyframes panic {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.1) rotate(-15deg); }
-            50% { transform: scale(1) rotate(0deg); }
-            75% { transform: scale(1.1) rotate(15deg); }
-            100% { transform: scale(1) rotate(0deg); }
+            0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 10px #ff0000); }
+            25% { transform: scale(1.1) rotate(-15deg); filter: drop-shadow(0 0 20px #ff0000); }
+            50% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 10px #ff0000); }
+            75% { transform: scale(1.1) rotate(15deg); filter: drop-shadow(0 0 20px #ff0000); }
+            100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 10px #ff0000); }
         }
 
         #cat {
             position: absolute;
-            font-size: 50px;
+            font-size: 60px; /* Made slightly larger for the evil version */
             cursor: pointer;
             user-select: none;
             display: none;
             z-index: 5;
-            animation: panic 0.3s infinite linear;
-            filter: drop-shadow(0 0 5px rgba(255,100,100,0.5));
+            animation: panic 0.2s infinite linear; /* Faster, more erratic animation */
+            color: black;
+            text-shadow: 0 0 5px #ff0000, 0 0 10px #aa0000; /* Evil aura */
         }
 
         .effect {
@@ -139,7 +148,6 @@
             display: none; background-color: rgba(0, 0, 0, 0.95); color: #ff4444; text-shadow: 0 0 10px #ff0000;
         }
 
-        /* Countdown specific styles */
         #countdown-screen {
             display: none;
             background-color: rgba(10, 0, 0, 0.9);
@@ -150,32 +158,11 @@
             z-index: 25;
         }
 
-        .zoom-throb {
-            animation: zoomPulse 1s linear forwards;
-        }
+        .zoom-throb { animation: zoomPulse 1s linear forwards; }
+        @keyframes zoomPulse { 0% { transform: scale(0.5); opacity: 0; } 20% { transform: scale(1); opacity: 1; } 80% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
 
-        @keyframes zoomPulse {
-            0% { transform: scale(0.5); opacity: 0; }
-            20% { transform: scale(1); opacity: 1; }
-            80% { transform: scale(1.5); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-
-        .final-command {
-            font-size: 12vh !important;
-            animation: shakeCommand 1.5s ease-in-out forwards !important;
-        }
-
-        @keyframes shakeCommand {
-            0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
-            10% { transform: scale(1.2); opacity: 1; filter: blur(0px); }
-            20% { transform: translate(10px, 10px) scale(1.1); }
-            30% { transform: translate(-10px, -10px) scale(1.1); }
-            40% { transform: translate(10px, -10px) scale(1.1); }
-            50% { transform: translate(-10px, 10px) scale(1.1); }
-            60% { transform: translate(0, 0) scale(1); }
-            100% { transform: scale(2); opacity: 0; }
-        }
+        .final-command { font-size: 12vh !important; animation: shakeCommand 1.5s ease-in-out forwards !important; }
+        @keyframes shakeCommand { 0% { transform: scale(0.8); opacity: 0; filter: blur(10px); } 10% { transform: scale(1.2); opacity: 1; filter: blur(0px); } 20% { transform: translate(10px, 10px) scale(1.1); } 30% { transform: translate(-10px, -10px) scale(1.1); } 40% { transform: translate(10px, -10px) scale(1.1); } 50% { transform: translate(-10px, 10px) scale(1.1); } 60% { transform: translate(0, 0) scale(1); } 100% { transform: scale(2); opacity: 0; } }
 
         .btn {
             padding: 15px 30px; font-size: 24px; font-family: 'Creepster', cursive; letter-spacing: 2px;
@@ -184,7 +171,7 @@
         }
         .btn:hover { background-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
 
-        h1 { font-family: 'Creepster', cursive; font-size: 80px; margin-bottom: 10px; letter-spacing: 5px; }
+        h1 { font-family: 'Creepster', cursive; font-size: 60px; margin-bottom: 10px; letter-spacing: 3px; max-width: 90%; }
         p { font-size: 24px; color: #dddddd; }
         #error-log { color: #ff5555; margin-top: 20px; font-family: monospace; max-width: 80%; }
     </style>
@@ -206,12 +193,12 @@
     <div id="fire-layer"></div>
 
     <div id="game-box">
-        <div id="cat">🐈</div>
+        <div id="cat">🐈‍⬛</div>
     </div>
 
     <div id="start-screen">
-        <h1>CAT SLAYER: INFERNO</h1>
-        <p>EMBRACE YOUR INFERNAL DESIRES, KILL THEM ALL.</p>
+        <h1>EMBRACE YOUR INFERNAL DESIRES</h1>
+        <h1>KILL THEM ALL</h1>
         <button class="btn" onclick="initiateRitual()">DESCEND</button>
         <div id="error-log"></div>
     </div>
@@ -262,7 +249,7 @@
                 count--;
                 if (count > 0) {
                     countdownText.style.animation = 'none';
-                    void countdownText.offsetWidth; // Force reflow to restart animation
+                    void countdownText.offsetWidth; 
                     countdownText.textContent = count;
                     countdownText.style.animation = 'zoomPulse 1s linear forwards';
                     playDeepThud();
@@ -279,7 +266,7 @@
                         isGameOver = false;
                         startMetalLoop();
                         moveCat();
-                    }, 1800); // Wait for the voice/animation to end before starting game
+                    }, 1800); 
                 }
             }, 1000);
         }
@@ -291,11 +278,9 @@
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(120, time);
             osc.frequency.exponentialRampToValueAtTime(10, time + 0.8);
-            
             const gain = audioCtx.createGain();
             gain.gain.setValueAtTime(1, time);
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.8);
-            
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start(time);
@@ -303,27 +288,22 @@
         }
 
         function playDemonicVoice() {
-            // Web Speech API for creepy text-to-speech
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance("click them all");
-                utterance.pitch = 0.1; // Minimum pitch for monstrous tone
-                utterance.rate = 0.5;  // Slow, dragging speed
+                utterance.pitch = 0.1;
+                utterance.rate = 0.5;
                 utterance.volume = 1;
                 window.speechSynthesis.speak(utterance);
             }
-
-            // Web Audio API distortion drone accompanying the voice
             if (audioCtx && audioCtx.state !== 'suspended') {
                 const time = audioCtx.currentTime;
                 const osc = audioCtx.createOscillator();
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(40, time);
                 osc.frequency.linearRampToValueAtTime(20, time + 1.5);
-                
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.8, time);
                 gain.gain.linearRampToValueAtTime(0.01, time + 1.5);
-                
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start(time);
@@ -346,8 +326,7 @@
                     const kick = audioCtx.createOscillator();
                     const kickGain = audioCtx.createGain();
                     kick.connect(kickGain); kickGain.connect(audioCtx.destination);
-                    kick.frequency.setValueAtTime(150, time);
-                    kick.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
+                    kick.frequency.setValueAtTime(150, time); kick.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
                     kickGain.gain.setValueAtTime(1.0, time); kickGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
                     kick.start(time); kick.stop(time + 0.16);
                 }
@@ -368,8 +347,6 @@
                 currentStep++;
             }, stepDuration * 1000);
         }
-
-        // --- Core Game Functions ---
 
         function playSplatSound() {
             if (!audioCtx || audioCtx.state === 'suspended') return;
