@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click the Cat</title>
+    <title>Endless Cat</title>
     <style>
         body {
             margin: 0;
@@ -15,69 +15,98 @@
             font-family: sans-serif;
         }
 
+        #game-box {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
         #cat {
             position: absolute;
             font-size: 50px;
             cursor: pointer;
             user-select: none;
-            transition: transform 0.1s ease;
+            display: none;
         }
 
-        #cat:active {
-            transform: scale(0.8);
-        }
-
-        #jumpscare-overlay {
+        #game-over-screen {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: black;
-            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-        }
-
-        #big-cat {
-            font-size: 250px;
-            animation: pop 0.2s ease-out forwards;
-        }
-
-        #smug-text {
             color: white;
-            font-size: 40px;
-            margin-top: 20px;
-            font-weight: bold;
         }
 
-        @keyframes pop {
-            0% { transform: scale(0.3); }
-            100% { transform: scale(1); }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 24px;
+            color: #aaaaaa;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
 
-    <div id="cat">🐈</div>
+    <div id="ui-layer">
+        <div>Clicks: <span id="ui-clicks">0</span></div>
+        <div>Misses: <span id="ui-misses">0</span>/5</div>
+    </div>
 
-    <div id="jumpscare-overlay">
-        <div id="big-cat">😼</div>
-        <div id="smug-text">Heh.</div>
+    <div id="game-box">
+        <div id="cat">🐈</div>
+    </div>
+
+    <div id="game-over-screen">
+        <h1>Defeat</h1>
+        <p>Times clicked: <span id="final-clicks">0</span></p>
     </div>
 
     <script>
         const cat = document.getElementById('cat');
-        const overlay = document.getElementById('jumpscare-overlay');
-        
-        // Determine threshold: random number between 3 and 10 clicks
-        const clickThreshold = Math.floor(Math.random() * 8) + 3;
-        let clickCount = 0;
+        const gameBox = document.getElementById('game-box');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const uiClicks = document.getElementById('ui-clicks');
+        const uiMisses = document.getElementById('ui-misses');
+        const finalClicks = document.getElementById('final-clicks');
+
+        let clicks = 0;
+        let misses = 0;
+        let catTimeout = null;
+        let isGameOver = false;
+
+        function getDisplayTime() {
+            // Linear interpolation: 0 clicks = 1000ms, 100 clicks = 100ms
+            if (clicks >= 100) return 100;
+            return 1000 - (clicks * 9);
+        }
 
         function moveCat() {
-            const padding = 100; 
+            if (isGameOver) return;
+
+            // Clear any existing timer to ensure only one instance runs
+            if (catTimeout) clearTimeout(catTimeout);
+
+            const padding = 100;
             const maxX = window.innerWidth - padding;
             const maxY = window.innerHeight - padding;
 
@@ -86,24 +115,51 @@
 
             cat.style.left = randomX + 'px';
             cat.style.top = randomY + 'px';
+            cat.style.display = 'block';
+
+            // Set timer for current difficulty speed
+            catTimeout = setTimeout(() => {
+                recordMiss();
+            }, getDisplayTime());
         }
 
-        function triggerJumpscare() {
-            cat.style.display = 'none';
-            overlay.style.display = 'flex';
-        }
+        function recordMiss() {
+            misses++;
+            uiMisses.textContent = misses;
 
-        cat.addEventListener('click', () => {
-            clickCount++;
-            
-            if (clickCount >= clickThreshold) {
-                triggerJumpscare();
+            if (misses >= 5) {
+                endGame();
             } else {
                 moveCat();
             }
+        }
+
+        function endGame() {
+            isGameOver = true;
+            clearTimeout(catTimeout);
+            cat.style.display = 'none';
+            finalClicks.textContent = clicks;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        // Cat click handler
+        cat.addEventListener('click', (e) => {
+            if (isGameOver) return;
+            e.stopPropagation(); // Prevents triggering the background click
+            
+            clicks++;
+            uiClicks.textContent = clicks;
+            
+            moveCat();
         });
 
-        // Initial placement
+        // Background click handler (clicking and missing the cat)
+        gameBox.addEventListener('click', () => {
+            if (isGameOver) return;
+            recordMiss();
+        });
+
+        // Start game
         moveCat();
     </script>
 </body>
