@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Cat - Geometric Inferno</title>
+    <title>Endless Cat - Distorted Inferno</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <style>
         body {
@@ -11,15 +11,12 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            /* Base darkness */
             background-color: #050000;
             overflow: hidden;
             font-family: sans-serif;
         }
 
-        /* LAYER 1: The UI Layer (Bottom) 
-           Positioned explicitly behind the infernal gradients.
-        */
+        /* LAYER 1: Core Metrics (Bottom) */
         #ui-layer {
             position: absolute;
             top: 0;
@@ -33,42 +30,35 @@
             color: #ffcccc;
             font-family: 'Creepster', cursive;
             pointer-events: none;
-            z-index: 1; /* Lowest structural index */
+            z-index: 1; 
             text-shadow: 0 0 10px #ff0000;
             letter-spacing: 3px;
         }
 
         .ui-small-text {
-            font-size: 3vh;
-            margin: 10px 0;
-            opacity: 0.8;
+            font-size: 4vh;
+            margin: 0;
+            opacity: 0.9;
         }
 
-        /* Trapezoid Container for Score 
-           Forces the 50% viewport height and shape 
-        */
-        #score-trapezoid {
-            height: 50vh;
-            width: 60vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* CSS Polygon to create a trapezoid */
-            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
-            background: rgba(40, 0, 0, 0.5); /* Dim blood background to define the shape */
-            border: 2px solid rgba(255, 0, 0, 0.2);
+        /* 3D Spatial Distortion Wrapper */
+        .distortion-chamber {
+            perspective: 400px; /* Controls the intensity of the trapezoid pinch */
+            margin: -2vh 0; /* Compensates for the 3D visual offset */
         }
 
         #ui-clicks {
-            font-size: 35vh; /* Massive scale to fill the trapezoid */
+            display: block;
+            font-size: 50vh; /* Consumes half the screen vertically */
             line-height: 1;
             color: #ff0000;
-            text-shadow: 0 0 30px #aa0000;
+            text-shadow: 0 0 40px #aa0000, 0 0 10px #ff0000;
+            /* Warps the flat text into a 3D trapezoid leaning away from the viewer */
+            transform: rotateX(45deg) scaleY(1.2); 
+            transform-origin: bottom center;
         }
 
-        /* LAYER 2: Hellish Landscape Background (Middle) 
-           Uses transparency to let the UI bleed through.
-        */
+        /* LAYER 2: Environment Overlays (Middle) */
         #hell-overlay {
             position: absolute;
             top: 0;
@@ -192,12 +182,14 @@
 <body>
 
     <div id="ui-layer">
-        <div class="ui-small-text">SCORE</div>
-        <div id="score-trapezoid">
+        <div class="ui-small-text" style="margin-bottom: 10px;">SCORE</div>
+        
+        <div class="distortion-chamber">
             <span id="ui-clicks">0</span>
         </div>
-        <div class="ui-small-text">FELINES CRUSHED</div>
-        <div class="ui-small-text" style="margin-top: 20px; font-size: 2vh;">MISSES: <span id="ui-misses">0</span>/5</div>
+        
+        <div class="ui-small-text" style="margin-top: 10px;">FELINES CRUSHED</div>
+        <div class="ui-small-text" style="margin-top: 2vh; font-size: 2.5vh; color: #880000;">MISSES: <span id="ui-misses">0</span> / 5</div>
     </div>
 
     <div id="hell-overlay"></div>
@@ -209,7 +201,7 @@
 
     <div id="start-screen">
         <h1>CAT SLAYER: INFERNO</h1>
-        <p>YOU ARE THE DESTROYER OF FELINES, EMBRACE YOUR INFERNAL DESIRES.</p>
+        <p>Awaiting operational command.</p>
         <button class="btn" onclick="forceBootSequence()">DESCEND</button>
         <div id="error-log"></div>
     </div>
@@ -217,6 +209,7 @@
     <div id="game-over-screen">
         <h1>SOUL CONSUMED</h1>
         <p>Entities destroyed: <span id="final-clicks">0</span></p>
+        <button class="btn" onclick="location.reload()">REINCARNATE</button>
     </div>
 
     <script>
