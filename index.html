@@ -3,115 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Calculator For all stdudes</title>
+    <title>Click the Cat</title>
     <style>
         body {
-            display: flex;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #121212;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        #cat {
+            position: absolute;
+            font-size: 50px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s ease;
+        }
+
+        #cat:active {
+            transform: scale(0.8);
+        }
+
+        #jumpscare-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            z-index: 9999;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
-            margin: 0;
+            flex-direction: column;
         }
-        .calculator {
-            background-color: #1c1c1c;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            width: 300px;
+
+        #big-cat {
+            font-size: 250px;
+            animation: pop 0.2s ease-out forwards;
         }
-        #display {
-            width: 100%;
-            height: 60px;
-            background-color: #a0a0a0;
-            color: #000;
-            text-align: right;
-            font-size: 2rem;
-            border: none;
-            padding: 10px;
-            box-sizing: border-box;
-            margin-bottom: 20px;
-            border-radius: 5px;
+
+        #smug-text {
+            color: white;
+            font-size: 40px;
+            margin-top: 20px;
+            font-weight: bold;
         }
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        button {
-            padding: 20px;
-            font-size: 1.2rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #333;
-            color: #fff;
-        }
-        button:active {
-            filter: brightness(1.2);
-        }
-        button.operator {
-            background-color: #ff9f0a;
-        }
-        button.clear {
-            background-color: #a5a5a5;
-            color: #000;
-        }
-        button.equal {
-            background-color: #ff9f0a;
+
+        @keyframes pop {
+            0% { transform: scale(0.3); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-<div class="calculator">
-    <input type="text" id="display" readonly>
-    <div class="buttons">
-        <button class="clear" onclick="clearDisplay()">C</button>
-        <button class="operator" onclick="appendValue('/')">/</button>
-        <button class="operator" onclick="appendValue('*')">*</button>
-        <button class="operator" onclick="appendValue('-')">-</button>
-        
-        <button onclick="appendValue('7')">7</button>
-        <button onclick="appendValue('8')">8</button>
-        <button onclick="appendValue('9')">9</button>
-        <button class="operator" onclick="appendValue('+')">+</button>
-        
-        <button onclick="appendValue('4')">4</button>
-        <button onclick="appendValue('5')">5</button>
-        <button onclick="appendValue('6')">6</button>
-        <button class="equal" style="grid-row: span 2; height: 100%;" onclick="calculate()">=</button>
-        
-        <button onclick="appendValue('1')">1</button>
-        <button onclick="appendValue('2')">2</button>
-        <button onclick="appendValue('3')">3</button>
-        
-        <button style="grid-column: span 2;" onclick="appendValue('0')">0</button>
-        <button onclick="appendValue('.')">.</button>
+    <div id="cat">🐈</div>
+
+    <div id="jumpscare-overlay">
+        <div id="big-cat">😼</div>
+        <div id="smug-text">Heh.</div>
     </div>
-</div>
 
-<script>
-    const display = document.getElementById('display');
+    <script>
+        const cat = document.getElementById('cat');
+        const overlay = document.getElementById('jumpscare-overlay');
+        
+        // Determine threshold: random number between 3 and 10 clicks
+        const clickThreshold = Math.floor(Math.random() * 8) + 3;
+        let clickCount = 0;
 
-    function appendValue(val) {
-        display.value += val;
-    }
+        function moveCat() {
+            const padding = 100; 
+            const maxX = window.innerWidth - padding;
+            const maxY = window.innerHeight - padding;
 
-    function clearDisplay() {
-        display.value = '';
-    }
+            const randomX = Math.max(0, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(0, Math.floor(Math.random() * maxY));
 
-    function calculate() {
-        try {
-            // eval is used here for maximum simplicity in a basic demo
-            display.value = eval(display.value);
-        } catch (error) {
-            display.value = 'Error';
+            cat.style.left = randomX + 'px';
+            cat.style.top = randomY + 'px';
         }
-    }
-</script>
 
+        function triggerJumpscare() {
+            cat.style.display = 'none';
+            overlay.style.display = 'flex';
+        }
+
+        cat.addEventListener('click', () => {
+            clickCount++;
+            
+            if (clickCount >= clickThreshold) {
+                triggerJumpscare();
+            } else {
+                moveCat();
+            }
+        });
+
+        // Initial placement
+        moveCat();
+    </script>
 </body>
 </html>
