@@ -3,29 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOU ARE THE MURDERER OF FELINES, EMBRACE YOUR INFERNAL DESIRES</title>
+    <title>Endless Cat - Geometric Inferno</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
             width: 100vw;
             height: 100vh;
-            /* Hellish Landscape Background */
-            background: radial-gradient(circle at 50% 100%, #5a0000 0%, #1a0000 60%, #000000 100%);
+            /* Base darkness */
+            background-color: #050000;
             overflow: hidden;
             font-family: sans-serif;
         }
 
-        /* Animated CSS Fire Layer */
+        /* LAYER 1: The UI Layer (Bottom) 
+           Positioned explicitly behind the infernal gradients.
+        */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffcccc;
+            font-family: 'Creepster', cursive;
+            pointer-events: none;
+            z-index: 1; /* Lowest structural index */
+            text-shadow: 0 0 10px #ff0000;
+            letter-spacing: 3px;
+        }
+
+        .ui-small-text {
+            font-size: 3vh;
+            margin: 10px 0;
+            opacity: 0.8;
+        }
+
+        /* Trapezoid Container for Score 
+           Forces the 50% viewport height and shape 
+        */
+        #score-trapezoid {
+            height: 50vh;
+            width: 60vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* CSS Polygon to create a trapezoid */
+            clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+            background: rgba(40, 0, 0, 0.5); /* Dim blood background to define the shape */
+            border: 2px solid rgba(255, 0, 0, 0.2);
+        }
+
+        #ui-clicks {
+            font-size: 35vh; /* Massive scale to fill the trapezoid */
+            line-height: 1;
+            color: #ff0000;
+            text-shadow: 0 0 30px #aa0000;
+        }
+
+        /* LAYER 2: Hellish Landscape Background (Middle) 
+           Uses transparency to let the UI bleed through.
+        */
+        #hell-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 100%, rgba(90, 0, 0, 0.4) 0%, rgba(26, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.9) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
         #fire-layer {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 20vh;
-            background: linear-gradient(to top, rgba(255, 69, 0, 0.8), transparent);
+            height: 30vh;
+            background: linear-gradient(to top, rgba(255, 69, 0, 0.7), transparent);
             pointer-events: none;
-            z-index: 1;
+            z-index: 3;
             animation: flicker 3s infinite alternate;
         }
 
@@ -35,55 +98,16 @@
             100% { opacity: 0.5; transform: scaleY(0.9); }
         }
 
-        #start-screen {
-            position: fixed;
+        /* LAYER 3: Interactive/Particle Elements (Top) */
+        #game-box {
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0b0b0b;
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            background-color: #aa0000;
-            color: white;
-            border: 1px solid #ff4444;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 20px;
-            box-shadow: 0 0 10px #aa0000;
-        }
-
-        .btn:hover {
-            background-color: #ff0000;
-            box-shadow: 0 0 20px #ff0000;
-        }
-
-        #error-log {
-            color: #ff5555;
-            margin-top: 20px;
-            font-family: monospace;
-            max-width: 80%;
-            text-align: center;
-        }
-
-        #game-box {
             width: 100%;
             height: 100%;
-            position: relative;
-            z-index: 2;
+            z-index: 4;
         }
 
-        /* Cat Animation */
         @keyframes panic {
             0% { transform: scale(1) rotate(0deg); }
             25% { transform: scale(1.1) rotate(-15deg); }
@@ -98,75 +122,35 @@
             cursor: pointer;
             user-select: none;
             display: none;
-            z-index: 3;
+            z-index: 5;
             animation: panic 0.3s infinite linear;
             filter: drop-shadow(0 0 5px rgba(255,100,100,0.5));
-        }
-
-        #game-over-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: #ff4444;
-            text-shadow: 0 0 10px #ff0000;
-        }
-
-        h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 24px;
-            color: #dddddd;
-        }
-
-        #ui-layer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #ffcccc;
-            font-size: 20px;
-            pointer-events: none;
-            z-index: 5;
-            text-shadow: 0 0 5px #ff0000;
         }
 
         .effect {
             position: absolute;
             font-weight: bold;
-            font-size: 24px;
+            font-family: 'Creepster', cursive;
+            font-size: 32px;
             pointer-events: none;
             animation: floatUp 0.6s ease-out forwards;
-            z-index: 4;
+            z-index: 6;
         }
 
-        .success-effect { color: #ff0000; text-shadow: 0 0 5px black; }
-        .fail-effect { color: #555555; text-shadow: 0 0 5px black; }
+        .success-effect { color: #ff0000; text-shadow: 0 0 10px black; }
+        .fail-effect { color: #555555; text-shadow: 0 0 10px black; }
 
-        /* Red Splat Particles */
         .red-splat-particle {
             position: absolute;
             background-color: #ff0000;
             border-radius: 50%;
             pointer-events: none;
-            z-index: 3;
+            z-index: 6;
             animation: explode 0.4s ease-out forwards;
             box-shadow: 0 0 5px #aa0000;
         }
         
-        .chunk { 
-            border-radius: 20%; 
-            background-color: #8b0000; 
-        }
+        .chunk { border-radius: 20%; background-color: #8b0000; }
 
         @keyframes floatUp {
             0% { transform: translateY(0); opacity: 1; }
@@ -176,26 +160,58 @@
             0% { transform: translate(0, 0) scale(1); opacity: 1; }
             100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
         }
+
+        /* Screens */
+        #start-screen, #game-over-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #0b0b0b;
+            z-index: 20;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            color: white; text-align: center;
+        }
+
+        #game-over-screen {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: #ff4444; text-shadow: 0 0 10px #ff0000;
+        }
+
+        .btn {
+            padding: 15px 30px; font-size: 24px; font-family: 'Creepster', cursive; letter-spacing: 2px;
+            background-color: #aa0000; color: white; border: 1px solid #ff4444;
+            cursor: pointer; border-radius: 5px; margin-top: 20px; box-shadow: 0 0 10px #aa0000;
+        }
+        .btn:hover { background-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
+
+        h1 { font-family: 'Creepster', cursive; font-size: 80px; margin-bottom: 10px; letter-spacing: 5px; }
+        p { font-size: 24px; color: #dddddd; }
+        #error-log { color: #ff5555; margin-top: 20px; font-family: monospace; max-width: 80%; }
     </style>
 </head>
 <body>
 
-    <div id="start-screen">
-        <h1>CAT SLAYER: INFERNO</h1>
-        <p>Awaiting operational command.</p>
-        <button class="btn" onclick="forceBootSequence()">DESCEND</button>
-        <div id="error-log"></div>
-    </div>
-
     <div id="ui-layer">
-        <div>Clicks: <span id="ui-clicks">0</span></div>
-        <div>Misses: <span id="ui-misses">0</span>/5</div>
+        <div class="ui-small-text">SCORE</div>
+        <div id="score-trapezoid">
+            <span id="ui-clicks">0</span>
+        </div>
+        <div class="ui-small-text">FELINES CRUSHED</div>
+        <div class="ui-small-text" style="margin-top: 20px; font-size: 2vh;">MISSES: <span id="ui-misses">0</span>/5</div>
     </div>
 
+    <div id="hell-overlay"></div>
     <div id="fire-layer"></div>
 
     <div id="game-box">
         <div id="cat">🐈</div>
+    </div>
+
+    <div id="start-screen">
+        <h1>CAT SLAYER: INFERNO</h1>
+        <p>YOU ARE THE DESTROYER OF FELINES, EMBRACE YOUR INFERNAL DESIRES.</p>
+        <button class="btn" onclick="forceBootSequence()">DESCEND</button>
+        <div id="error-log"></div>
     </div>
 
     <div id="game-over-screen">
@@ -205,7 +221,6 @@
 
     <script>
         const cat = document.getElementById('cat');
-        const gameBox = document.getElementById('game-box');
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const errorLog = document.getElementById('error-log');
@@ -225,56 +240,43 @@
                 errorLog.textContent = "UI Render Failure: " + err.message;
                 return;
             }
-
-            try {
-                attemptAudioInit();
-            } catch (err) {
-                console.log("Audio module rejected by environment.", err);
-            }
+            try { attemptAudioInit(); } catch (err) { console.log("Audio module rejected."); }
         }
 
         function attemptAudioInit() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return; 
-
             audioCtx = new AudioContext();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             let currentStep = 0;
             const stepDuration = 60 / 140 / 2;
-            // D-minor aggressive pattern
             const guitarPattern = [73.42, 73.42, 87.31, 73.42, 98.00, 73.42, 103.83, 98.00, 73.42, 73.42, 87.31, 73.42, 98.00, 87.31, 73.42, 0];
 
             setInterval(() => {
                 if (isGameOver || audioCtx.state === 'suspended') return;
                 const time = audioCtx.currentTime;
                 
-                // Kick
                 if (currentStep % 2 === 0 || currentStep % 7 === 0) {
                     const kick = audioCtx.createOscillator();
                     const kickGain = audioCtx.createGain();
                     kick.connect(kickGain); kickGain.connect(audioCtx.destination);
                     kick.frequency.setValueAtTime(150, time);
                     kick.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
-                    kickGain.gain.setValueAtTime(1.0, time);
-                    kickGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+                    kickGain.gain.setValueAtTime(1.0, time); kickGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
                     kick.start(time); kick.stop(time + 0.16);
                 }
 
-                // Synth Metal Guitar
                 const note = guitarPattern[currentStep % guitarPattern.length];
                 if (note > 0) {
-                    const osc = audioCtx.createOscillator();
-                    const osc2 = audioCtx.createOscillator();
-                    const guitarGain = audioCtx.createGain();
-                    const distFilter = audioCtx.createBiquadFilter();
+                    const osc = audioCtx.createOscillator(); const osc2 = audioCtx.createOscillator();
+                    const guitarGain = audioCtx.createGain(); const distFilter = audioCtx.createBiquadFilter();
 
                     osc.type = 'sawtooth'; osc.frequency.setValueAtTime(note, time);
                     osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(note * 1.01, time);
                     distFilter.type = 'lowpass'; distFilter.frequency.value = 800; 
 
-                    guitarGain.gain.setValueAtTime(0.4, time);
-                    guitarGain.gain.exponentialRampToValueAtTime(0.01, time + stepDuration * 0.9);
+                    guitarGain.gain.setValueAtTime(0.4, time); guitarGain.gain.exponentialRampToValueAtTime(0.01, time + stepDuration * 0.9);
 
                     osc.connect(distFilter); osc2.connect(distFilter);
                     distFilter.connect(guitarGain); guitarGain.connect(audioCtx.destination);
@@ -289,34 +291,19 @@
             if (!audioCtx || audioCtx.state === 'suspended') return;
             const time = audioCtx.currentTime;
 
-            // Splash
-            const bufferSize = audioCtx.sampleRate * 0.2; 
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const bufferSize = audioCtx.sampleRate * 0.2; const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
             
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            const noiseFilter = audioCtx.createBiquadFilter();
-            noiseFilter.type = 'lowpass';
-            noiseFilter.frequency.setValueAtTime(1500, time);
-            noiseFilter.frequency.exponentialRampToValueAtTime(100, time + 0.15);
-            
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.8, time);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
-
+            const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter(); noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.setValueAtTime(1500, time); noiseFilter.frequency.exponentialRampToValueAtTime(100, time + 0.15);
+            const noiseGain = audioCtx.createGain(); noiseGain.gain.setValueAtTime(0.8, time); noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
             noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
             noise.start(time); noise.stop(time + 0.2);
 
-            // Thud
-            const osc = audioCtx.createOscillator();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(300, time);
-            osc.frequency.exponentialRampToValueAtTime(40, time + 0.15);
-            const oscGain = audioCtx.createGain();
-            oscGain.gain.setValueAtTime(0.9, time);
-            oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+            const osc = audioCtx.createOscillator(); osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, time); osc.frequency.exponentialRampToValueAtTime(40, time + 0.15);
+            const oscGain = audioCtx.createGain(); oscGain.gain.setValueAtTime(0.9, time); oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
             osc.connect(oscGain); oscGain.connect(audioCtx.destination);
             osc.start(time); osc.stop(time + 0.16);
         }
@@ -324,21 +311,11 @@
         function playFailSound() {
             if (!audioCtx || audioCtx.state === 'suspended') return;
             const time = audioCtx.currentTime;
-            
-            // Harsh discordant buzzer
-            const osc = audioCtx.createOscillator();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(110, time); // Low A
-            osc.frequency.linearRampToValueAtTime(80, time + 0.4); 
-            
-            const oscGain = audioCtx.createGain();
-            oscGain.gain.setValueAtTime(0.6, time);
-            oscGain.gain.linearRampToValueAtTime(0.01, time + 0.4);
-            
-            osc.connect(oscGain);
-            oscGain.connect(audioCtx.destination);
-            osc.start(time);
-            osc.stop(time + 0.45);
+            const osc = audioCtx.createOscillator(); osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(110, time); osc.frequency.linearRampToValueAtTime(80, time + 0.4); 
+            const oscGain = audioCtx.createGain(); oscGain.gain.setValueAtTime(0.6, time); oscGain.gain.linearRampToValueAtTime(0.01, time + 0.4);
+            osc.connect(oscGain); oscGain.connect(audioCtx.destination);
+            osc.start(time); osc.stop(time + 0.45);
         }
 
         function getDisplayTime() {
@@ -347,32 +324,20 @@
         }
 
         function createEffect(text, className, x, y) {
-            const effect = document.createElement('div');
-            effect.className = `effect ${className}`;
-            effect.textContent = text;
-            effect.style.left = x + 'px';
-            effect.style.top = y + 'px';
-            document.body.appendChild(effect);
+            const effect = document.createElement('div'); effect.className = `effect ${className}`; effect.textContent = text;
+            effect.style.left = x + 'px'; effect.style.top = y + 'px'; document.body.appendChild(effect);
             setTimeout(() => { effect.remove(); }, 600);
         }
 
         function createRedSplatter(x, y) {
             for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'red-splat-particle';
+                const particle = document.createElement('div'); particle.className = 'red-splat-particle';
                 if (Math.random() > 0.5) particle.classList.add('chunk');
-
                 const size = Math.floor(Math.random() * 12) + 4;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.floor(Math.random() * 100) + 30;
-                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
-                particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
-
+                particle.style.width = size + 'px'; particle.style.height = size + 'px';
+                particle.style.left = x + 'px'; particle.style.top = y + 'px';
+                const angle = Math.random() * Math.PI * 2; const distance = Math.floor(Math.random() * 100) + 30;
+                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`); particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
                 document.body.appendChild(particle);
                 setTimeout(() => { particle.remove(); }, 400);
             }
@@ -381,47 +346,26 @@
         function moveCat() {
             if (isGameOver) return;
             if (catTimeout) clearTimeout(catTimeout);
-
-            const maxX = window.innerWidth - 100;
-            const maxY = window.innerHeight - 100;
-            cat.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + 'px';
-            cat.style.top = Math.max(0, Math.floor(Math.random() * maxY)) + 'px';
+            const maxX = window.innerWidth - 100; const maxY = window.innerHeight - 100;
+            cat.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + 'px'; cat.style.top = Math.max(0, Math.floor(Math.random() * maxY)) + 'px';
             cat.style.display = 'block';
-
             catTimeout = setTimeout(() => {
-                const rect = cat.getBoundingClientRect();
-                createEffect('MISS', 'fail-effect', rect.left, rect.top);
-                recordMiss();
+                const rect = cat.getBoundingClientRect(); createEffect('MISS', 'fail-effect', rect.left, rect.top); recordMiss();
             }, getDisplayTime());
         }
 
         function recordMiss() {
-            misses++;
-            document.getElementById('ui-misses').textContent = misses;
-            playFailSound();
-            
+            misses++; document.getElementById('ui-misses').textContent = misses; playFailSound();
             if (misses >= 5) {
-                isGameOver = true;
-                clearTimeout(catTimeout);
-                cat.style.display = 'none';
-                document.getElementById('final-clicks').textContent = clicks;
-                gameOverScreen.style.display = 'flex';
-            } else {
-                moveCat();
-            }
+                isGameOver = true; clearTimeout(catTimeout); cat.style.display = 'none';
+                document.getElementById('final-clicks').textContent = clicks; gameOverScreen.style.display = 'flex';
+            } else { moveCat(); }
         }
 
         cat.addEventListener('click', (e) => {
             if (isGameOver) return;
-            e.stopPropagation();
-            clicks++;
-            document.getElementById('ui-clicks').textContent = clicks;
-            
-            playSplatSound();
-            createRedSplatter(e.clientX, e.clientY);
-            createEffect('+1', 'success-effect', e.clientX, e.clientY);
-            
-            moveCat();
+            e.stopPropagation(); clicks++; document.getElementById('ui-clicks').textContent = clicks;
+            playSplatSound(); createRedSplatter(e.clientX, e.clientY); createEffect('+1', 'success-effect', e.clientX, e.clientY); moveCat();
         });
     </script>
 </body>
