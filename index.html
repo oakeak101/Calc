@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Cat</title>
+    <title>Endless Cat with Effects</title>
     <style>
         body {
             margin: 0;
@@ -27,6 +27,7 @@
             cursor: pointer;
             user-select: none;
             display: none;
+            z-index: 2;
         }
 
         #game-over-screen {
@@ -63,6 +64,34 @@
             pointer-events: none;
             z-index: 5;
         }
+
+        .effect {
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 0.6s ease-out forwards;
+            z-index: 4;
+        }
+
+        .success-effect {
+            color: #4CAF50;
+        }
+
+        .fail-effect {
+            color: #F44336;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -95,15 +124,26 @@
         let isGameOver = false;
 
         function getDisplayTime() {
-            // Linear interpolation: 0 clicks = 1000ms, 100 clicks = 100ms
             if (clicks >= 100) return 100;
             return 1000 - (clicks * 9);
+        }
+
+        function createEffect(text, className, x, y) {
+            const effect = document.createElement('div');
+            effect.className = `effect ${className}`;
+            effect.textContent = text;
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            document.body.appendChild(effect);
+
+            setTimeout(() => {
+                effect.remove();
+            }, 600);
         }
 
         function moveCat() {
             if (isGameOver) return;
 
-            // Clear any existing timer to ensure only one instance runs
             if (catTimeout) clearTimeout(catTimeout);
 
             const padding = 100;
@@ -117,8 +157,10 @@
             cat.style.top = randomY + 'px';
             cat.style.display = 'block';
 
-            // Set timer for current difficulty speed
             catTimeout = setTimeout(() => {
+                // Timer expired. Trigger failure effect at cat's current position.
+                const rect = cat.getBoundingClientRect();
+                createEffect('MISS', 'fail-effect', rect.left, rect.top);
                 recordMiss();
             }, getDisplayTime());
         }
@@ -142,24 +184,24 @@
             gameOverScreen.style.display = 'flex';
         }
 
-        // Cat click handler
         cat.addEventListener('click', (e) => {
             if (isGameOver) return;
-            e.stopPropagation(); // Prevents triggering the background click
+            e.stopPropagation();
             
             clicks++;
             uiClicks.textContent = clicks;
             
+            createEffect('+1', 'success-effect', e.clientX, e.clientY);
             moveCat();
         });
 
-        // Background click handler (clicking and missing the cat)
-        gameBox.addEventListener('click', () => {
+        gameBox.addEventListener('click', (e) => {
             if (isGameOver) return;
+            
+            createEffect('MISS', 'fail-effect', e.clientX, e.clientY);
             recordMiss();
         });
 
-        // Start game
         moveCat();
     </script>
 </body>
