@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Cat - Distorted Inferno</title>
+    <title>Endless Cat - Centered Inferno</title>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
     <style>
         body {
@@ -39,21 +39,25 @@
             font-size: 4vh;
             margin: 0;
             opacity: 0.9;
+            /* Ensures text doesn't collapse */
+            line-height: 1;
         }
 
         /* 3D Spatial Distortion Wrapper */
         .distortion-chamber {
-            perspective: 400px; /* Controls the intensity of the trapezoid pinch */
-            margin: -2vh 0; /* Compensates for the 3D visual offset */
+            perspective: 400px;
+            /* Negative margin physically pulls the element up to correct 
+               the visual sagging caused by rotateX transform origin */
+            margin-top: -10vh; 
+            margin-bottom: 2vh;
         }
 
         #ui-clicks {
             display: block;
-            font-size: 50vh; /* Consumes half the screen vertically */
-            line-height: 1;
+            font-size: 50vh; 
+            line-height: 0.8; /* Tighter bounding box for precise centering */
             color: #ff0000;
             text-shadow: 0 0 40px #aa0000, 0 0 10px #ff0000;
-            /* Warps the flat text into a 3D trapezoid leaning away from the viewer */
             transform: rotateX(45deg) scaleY(1.2); 
             transform-origin: bottom center;
         }
@@ -182,14 +186,17 @@
 <body>
 
     <div id="ui-layer">
-        <div class="ui-small-text" style="margin-bottom: 10px;">SCORE</div>
+        <div class="ui-small-text">SCORE</div>
         
         <div class="distortion-chamber">
             <span id="ui-clicks">0</span>
         </div>
         
-        <div class="ui-small-text" style="margin-top: 10px;">FELINES CRUSHED</div>
-        <div class="ui-small-text" style="margin-top: 2vh; font-size: 2.5vh; color: #880000;">MISSES: <span id="ui-misses">0</span> / 5</div>
+        <div class="ui-small-text">FELINES CRUSHED</div>
+        
+        <div class="ui-small-text" style="margin-top: 2vh; font-size: 2.5vh; color: #880000;">
+            MISSES: <span id="ui-misses">0</span> / 5
+        </div>
     </div>
 
     <div id="hell-overlay"></div>
@@ -201,7 +208,7 @@
 
     <div id="start-screen">
         <h1>CAT SLAYER: INFERNO</h1>
-        <p>Awaiting operational command.</p>
+        <p>YOU ARE THE DESTROYER OF ALL FELINES, EMBRACE YOUR INFERNAL DESIRES.</p>
         <button class="btn" onclick="forceBootSequence()">DESCEND</button>
         <div id="error-log"></div>
     </div>
