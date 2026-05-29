@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless Cat - Failsafe Edition</title>
+    <title>Endless Cat - Ectoplasm Edition</title>
     <style>
         body {
             margin: 0;
@@ -34,8 +34,8 @@
             padding: 15px 30px;
             font-size: 20px;
             font-weight: bold;
-            background-color: #8b0000;
-            color: white;
+            background-color: #39ff14;
+            color: black;
             border: none;
             cursor: pointer;
             border-radius: 5px;
@@ -43,7 +43,7 @@
         }
 
         .btn:hover {
-            background-color: #ff0000;
+            background-color: #2eb810;
         }
 
         #error-log {
@@ -96,231 +96,4 @@
 
         #ui-layer {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            font-size: 20px;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .effect {
-            position: absolute;
-            font-weight: bold;
-            font-size: 24px;
-            pointer-events: none;
-            animation: floatUp 0.6s ease-out forwards;
-            z-index: 4;
-        }
-
-        .success-effect { color: #4CAF50; }
-        .fail-effect { color: #F44336; }
-
-        .gore-particle {
-            position: absolute;
-            background-color: #8b0000;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 3;
-            animation: explode 0.4s ease-out forwards;
-        }
-        .chunk { border-radius: 2px; background-color: #5c0000; }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-        @keyframes explode {
-            0% { transform: translate(0, 0) scale(1); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="start-screen">
-        <h1>CAT SLAYER</h1>
-        <p>Awaiting operational command.</p>
-        <button class="btn" onclick="forceBootSequence()">START GAME</button>
-        <div id="error-log"></div>
-    </div>
-
-    <div id="ui-layer">
-        <div>Clicks: <span id="ui-clicks">0</span></div>
-        <div>Misses: <span id="ui-misses">0</span>/5</div>
-    </div>
-
-    <div id="game-box">
-        <div id="cat">🐈</div>
-    </div>
-
-    <div id="game-over-screen">
-        <h1>Defeat</h1>
-        <p>Times clicked: <span id="final-clicks">0</span></p>
-    </div>
-
-    <script>
-        const cat = document.getElementById('cat');
-        const gameBox = document.getElementById('game-box');
-        const startScreen = document.getElementById('start-screen');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const errorLog = document.getElementById('error-log');
-        
-        let clicks = 0;
-        let misses = 0;
-        let catTimeout = null;
-        let isGameOver = false;
-
-        // Failsafe Boot Sequence
-        function forceBootSequence() {
-            try {
-                startScreen.style.display = 'none';
-                isGameOver = false;
-                moveCat();
-            } catch (err) {
-                errorLog.textContent = "UI Render Failure: " + err.message;
-                return;
-            }
-
-            try {
-                attemptAudioInit();
-            } catch (err) {
-                console.log("Audio module rejected by environment. Proceeding in silence.", err);
-            }
-        }
-
-        // Isolated Audio Module
-        function attemptAudioInit() {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return; 
-
-            const audioCtx = new AudioContext();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-
-            let currentStep = 0;
-            const stepDuration = 60 / 140 / 2;
-            const guitarPattern = [73.42, 73.42, 87.31, 73.42, 98.00, 73.42, 103.83, 98.00, 73.42, 73.42, 87.31, 73.42, 98.00, 87.31, 73.42, 0];
-
-            setInterval(() => {
-                if (isGameOver || audioCtx.state === 'suspended') return;
-                const time = audioCtx.currentTime;
-                
-                // Kick
-                if (currentStep % 2 === 0 || currentStep % 7 === 0) {
-                    const kick = audioCtx.createOscillator();
-                    const kickGain = audioCtx.createGain();
-                    kick.connect(kickGain);
-                    kickGain.connect(audioCtx.destination);
-                    kick.frequency.setValueAtTime(150, time);
-                    kick.frequency.exponentialRampToValueAtTime(0.01, time + 0.15);
-                    kickGain.gain.setValueAtTime(1.0, time);
-                    kickGain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
-                    kick.start(time);
-                    kick.stop(time + 0.16);
-                }
-
-                // Guitar
-                const note = guitarPattern[currentStep % guitarPattern.length];
-                if (note > 0) {
-                    const osc = audioCtx.createOscillator();
-                    const osc2 = audioCtx.createOscillator();
-                    const guitarGain = audioCtx.createGain();
-                    const distFilter = audioCtx.createBiquadFilter();
-
-                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(note, time);
-                    osc2.type = 'sawtooth'; osc2.frequency.setValueAtTime(note * 1.01, time);
-                    distFilter.type = 'lowpass'; distFilter.frequency.value = 800; 
-
-                    guitarGain.gain.setValueAtTime(0.4, time);
-                    guitarGain.gain.exponentialRampToValueAtTime(0.01, time + stepDuration * 0.9);
-
-                    osc.connect(distFilter); osc2.connect(distFilter);
-                    distFilter.connect(guitarGain); guitarGain.connect(audioCtx.destination);
-                    osc.start(time); osc2.start(time);
-                    osc.stop(time + stepDuration); osc2.stop(time + stepDuration);
-                }
-                currentStep++;
-            }, stepDuration * 1000);
-        }
-
-        // Game Logic
-        function getDisplayTime() {
-            if (clicks >= 100) return 100;
-            return 1000 - (clicks * 9);
-        }
-
-        function createEffect(text, className, x, y) {
-            const effect = document.createElement('div');
-            effect.className = `effect ${className}`;
-            effect.textContent = text;
-            effect.style.left = x + 'px';
-            effect.style.top = y + 'px';
-            document.body.appendChild(effect);
-            setTimeout(() => { effect.remove(); }, 600);
-        }
-
-        function createGoreExplosion(x, y) {
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'gore-particle';
-                if (Math.random() > 0.6) particle.classList.add('chunk');
-
-                const size = Math.floor(Math.random() * 8) + 4;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.floor(Math.random() * 80) + 20;
-                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
-                particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
-
-                document.body.appendChild(particle);
-                setTimeout(() => { particle.remove(); }, 400);
-            }
-        }
-
-        function moveCat() {
-            if (isGameOver) return;
-            if (catTimeout) clearTimeout(catTimeout);
-
-            const maxX = window.innerWidth - 100;
-            const maxY = window.innerHeight - 100;
-            cat.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + 'px';
-            cat.style.top = Math.max(0, Math.floor(Math.random() * maxY)) + 'px';
-            cat.style.display = 'block';
-
-            catTimeout = setTimeout(() => {
-                const rect = cat.getBoundingClientRect();
-                createEffect('MISS', 'fail-effect', rect.left, rect.top);
-                recordMiss();
-            }, getDisplayTime());
-        }
-
-        function recordMiss() {
-            misses++;
-            document.getElementById('ui-misses').textContent = misses;
-            if (misses >= 5) {
-                isGameOver = true;
-                clearTimeout(catTimeout);
-                cat.style.display = 'none';
-                document.getElementById('final-clicks').textContent = clicks;
-                gameOverScreen.style.display = 'flex';
-            } else {
-                moveCat();
-            }
-        }
-
-        cat.addEventListener('click', (e) => {
-            if (isGameOver) return;
-            e.stopPropagation();
-            clicks++;
-            document.getElementById('ui-clicks').textContent = clicks;
-            createGoreExplosion(e.clientX, e.clientY);
-            createEffect('+1', 'success-effect', e.clientX, e.clientY);
-            moveCat();
-        });
-    </script>
-</body>
-</html>
+            top
